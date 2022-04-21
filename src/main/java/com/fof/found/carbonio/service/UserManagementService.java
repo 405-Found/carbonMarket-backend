@@ -16,4 +16,8 @@ public class UserManagementService {
         Page<User> page = userRepository.findByEmail(email, Pageable.ofSize(1));
         return page.getContent().isEmpty() ? null : page.getContent().get(0);
     }
+
+    public void registerUser(User user){
+        userRepository.save(user);
+    }
 }

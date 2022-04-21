@@ -13,4 +13,5 @@ public class UserStatus {
     private float curCarbonEmission;
     private LocalDate localDate;
     private List<DailyShare> dailyShares;
+    private GreenLevel greenLevel;
 }
