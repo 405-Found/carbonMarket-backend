@@ -16,9 +16,7 @@ public class Activity {
     private String id;
     private String activityName;
     private LocalDateTime date;
-    private List<ActivityItem> activityItems;
-
-    //carbon emission amount
-    private float carbonAmount;
+    private ActivityItem activityItem;
+    private String description;
 
 }

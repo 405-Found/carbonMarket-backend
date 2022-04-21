@@ -1,10 +1,8 @@
 package com.fof.found.carbonio.service;
 
 import com.fof.found.carbonio.entity.Activity;
-import com.fof.found.carbonio.entity.DailyShare;
+import com.fof.found.carbonio.entity.Share;
 import com.fof.found.carbonio.entity.UserStatus;
-import com.fof.found.carbonio.entity.activity.ActivityItem;
-import com.fof.found.carbonio.entity.activity.TransportationType;
 import com.fof.found.carbonio.repository.ActivityRepository;
 import com.fof.found.carbonio.repository.UserCurrentStatusRepository;
 import com.fof.found.carbonio.repository.UserRepository;
@@ -53,17 +51,15 @@ public class UserManagementService {
         UserStatus curStatus = statusRepository.findByUserID(user.getUserID(),Pageable.ofSize(1)).getContent().get(0);
         //update the data of user status in the database
         float carbonEmission = curStatus.getCurCarbonEmission();
-        for(ActivityItem item: activity.getActivityItems()){
-            DailyShare dailyShare = curStatus.getDailyShares().get(item.getType());
-            float amount = dailyShare.getAmount()+ item.getCarbonAmount();
-            dailyShare.setAmount(amount);
-            //update the overall carbon emission
-            carbonEmission = carbonEmission+ item.getCarbonAmount();
-
+        curStatus.setCurCarbonEmission(curStatus.getCurCarbonEmission()+activity.getActivityItem().getCarbonAmount());
+        Share share = curStatus.getShares().get(activity.getActivityItem().getType());
+        share.setAmount(share.getAmount()+activity.getActivityItem().getCarbonAmount());
+        //update the percentage
+        for(Share s: curStatus.getShares().values()){
+            s.setPercentage(s.getAmount()/ curStatus.getCurCarbonEmission());
         }
-        for(DailyShare share: curStatus.getDailyShares().values()){
-            share.setPercentage(share.getAmount()/carbonEmission);
-        }
+        //update the status
+        statusRepository.save(curStatus);
         //Set the green level of the userStatus
 
 
