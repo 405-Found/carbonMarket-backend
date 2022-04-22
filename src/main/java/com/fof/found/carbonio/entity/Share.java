@@ -9,4 +9,8 @@ public class Share {
     private TransportationType type;
     //Actual amount of carbon emission
     private float amount;
+
+    public Share(TransportationType type) {
+        this.type = type;
+    }
 }

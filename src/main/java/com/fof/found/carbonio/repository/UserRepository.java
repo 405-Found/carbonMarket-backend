@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends ElasticsearchRepository<User, String> {
     Page<User> findByEmail(String email, Pageable pageable);
+    Page<User> findByToken(String token, Pageable pageable);
+
 }

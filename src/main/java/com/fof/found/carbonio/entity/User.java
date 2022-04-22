@@ -1,5 +1,6 @@
 package com.fof.found.carbonio.entity;
 
+import com.fof.found.carbonio.entity.activity.Goal;
 import lombok.Data;
 import org.springframework.data.elasticsearch.annotations.Document;
 
@@ -17,6 +18,10 @@ public class User {
     private boolean isCompanyUser;
     //How much you could use to donate
     private float balance;
+    //Accumulated carbonCredit
+    private float carbonCredit;
+    private String token;
+    private Goal todayGoal;
 
     private UserStatus currentStatus;
 

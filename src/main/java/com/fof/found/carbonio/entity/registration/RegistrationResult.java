@@ -6,9 +6,11 @@ import lombok.Data;
 public class RegistrationResult {
     private boolean isRegistered;
     private String responseInformation;
+    private String token;
 
-    public RegistrationResult(boolean isRegistered, String responseInformation) {
+    public RegistrationResult(boolean isRegistered, String responseInformation,String token) {
         this.isRegistered = isRegistered;
         this.responseInformation = responseInformation;
+        this.token = token;
     }
 }
