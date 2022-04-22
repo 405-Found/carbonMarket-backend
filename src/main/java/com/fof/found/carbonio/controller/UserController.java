@@ -6,8 +6,10 @@ import com.fof.found.carbonio.entity.UserStatus;
 import com.fof.found.carbonio.entity.activity.DailyPlan;
 import com.fof.found.carbonio.entity.activity.Goal;
 import com.fof.found.carbonio.entity.activity.PlanItem;
+import com.fof.found.carbonio.entity.redisModel.Friend;
 import com.fof.found.carbonio.entity.registration.RegistrationResult;
 import com.fof.found.carbonio.service.DailyPlanService;
+import com.fof.found.carbonio.service.FriendsService;
 import com.fof.found.carbonio.service.UserManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,8 @@ public class UserController {
     UserManagementService userManagementService;
     @Autowired
     DailyPlanService dailyPlanService;
+    @Autowired
+    FriendsService friendsService;
 
 
 
@@ -89,5 +93,20 @@ public class UserController {
     @ResponseBody
     public List<Activity> getHistoricalActivity(@RequestParam(name="token")String token){
         return userManagementService.findAllActivities(token);
+    }
+    @GetMapping("/carbonMarket/user/friends")
+    @ResponseBody
+    public List<Friend> getFriends(@RequestParam(name="token")String token){
+        return friendsService.getFriends(userManagementService.findUserByToken(token).getEmail());
+    }
+    @PostMapping("/carbonMarket/user/addFriend")
+    public void addFriend(@RequestParam(name="token")String token,@RequestParam(name="email")String email){
+        User user = userManagementService.findUserByToken(token);
+        User friend = userManagementService.findUserByEmail(email);
+        Friend f = new Friend();
+        f.setCarbonCredit(friend.getCarbonCredit());
+        f.setEmail(friend.getEmail());
+        f.setName(friend.getUserName());
+        friendsService.addFriend(f, user.getEmail());
     }
 }
