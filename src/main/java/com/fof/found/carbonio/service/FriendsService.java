@@ -66,6 +66,13 @@ public class FriendsService {
         ZSets.add(friend.getEmail(),userF, userF.getCarbonCredit());
         ZSets.add(friend.getEmail(),friendF, friendF.getCarbonCredit());
     }
+    //single side
+    public void deleteFriendOnLeaderBoard(Friend friend,String email){
+        ZSets.remove(email,friend);
+    }
+    public void addFriendOnLeaderBoard(Friend friend,String email){
+        ZSets.add(email,friend, friend.getCarbonCredit());
+    }
 
 
 }

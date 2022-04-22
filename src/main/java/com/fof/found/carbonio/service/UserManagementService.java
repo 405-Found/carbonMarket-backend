@@ -77,10 +77,17 @@ public class UserManagementService {
         statusRepository.save(userStatus);
     }
     public void setGoalForUser(User user,float goal){
+        //try to delete in leaderboardFirst
+        Friend userF = new Friend(user.getUserName(), user.getEmail(), user.getCarbonCredit());
+        friendsService.deleteFriendOnLeaderBoard(userF,user.getEmail());
         Goal todayGoal = new Goal(goal);
         user.setTodayGoal(todayGoal);
         user.setCarbonCredit(user.getCarbonCredit()+goal);
         updateUser(user);
+        //try to update user on leaderBoard
+        userF.setCarbonCredit(user.getCarbonCredit());
+        friendsService.addFriendOnLeaderBoard(userF, user.getEmail());
+
 
 
     }
@@ -91,6 +98,10 @@ public class UserManagementService {
         activity.setDate(LocalDate.now());
         activity.setUserID(user.getUserID());
 
+        //delete user on leaderboard
+        Friend userF = new Friend(user.getUserName(),user.getEmail(),user.getCarbonCredit());
+        friendsService.deleteFriendOnLeaderBoard(userF, user.getEmail());
+
         //do Calculations on carbon emission
 
         //TODO  setup the carbonAmount
@@ -98,7 +109,9 @@ public class UserManagementService {
         updateCurrentUserStatus(activity,user);
         //save activity in database (es)
         activityRepository.save(activity);
-        //save activity in redis
+        //refresh leaderboard on redis
+        userF.setCarbonCredit(user.getCarbonCredit());
+        friendsService.addFriendOnLeaderBoard(userF, user.getEmail());
 
         return activity;
     }
