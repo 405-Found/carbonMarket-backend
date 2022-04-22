@@ -73,15 +73,9 @@ public class UserManagementService {
     public void setGoalForUser(User user,float goal){
         Goal todayGoal = new Goal(goal);
         user.setTodayGoal(todayGoal);
-        UserStatus userStatus = user.getCurrentStatus();
-        if(userStatus == null){
-            userStatus = new UserStatus();
-            userStatus.setUserID(user.getUserID());
-            //update the user with current user status
-        }
-        userStatus.setCurCarbonEmission(userStatus.getCurCarbonEmission()+goal);
+        user.setCarbonCredit(user.getCarbonCredit()+goal);
         updateUser(user);
-        updateUserStatus(userStatus);
+
 
     }
     public Activity createUserActivity(Activity activity, String token){
@@ -139,13 +133,16 @@ public class UserManagementService {
             curStatus.setUserID(user.getUserID());
             //update the user with current user status
         }
+
         //update the data of user status in the database
-        float carbonEmission = curStatus.getCurCarbonEmission();
+
         //TODO calculate carbon amount
         /*
         * fake for test*/
         activity.getActivityItem().setCarbonAmount(9);
         //
+        //update the carbonCredit
+        user.setCarbonCredit(user.getCarbonCredit()-activity.getActivityItem().getCarbonAmount());
         curStatus.setCurCarbonEmission(curStatus.getCurCarbonEmission()+activity.getActivityItem().getCarbonAmount());
         Share share = curStatus.getShares().get(activity.getActivityItem().getType());
         share.setAmount(share.getAmount()+activity.getActivityItem().getCarbonAmount());
