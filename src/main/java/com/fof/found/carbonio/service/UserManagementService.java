@@ -4,6 +4,7 @@ import com.fof.found.carbonio.entity.Activity;
 import com.fof.found.carbonio.entity.Share;
 import com.fof.found.carbonio.entity.UserStatus;
 import com.fof.found.carbonio.entity.activity.Goal;
+import com.fof.found.carbonio.entity.redisModel.Friend;
 import com.fof.found.carbonio.repository.ActivityRepository;
 import com.fof.found.carbonio.repository.UserCurrentStatusRepository;
 import com.fof.found.carbonio.repository.UserRepository;
@@ -47,6 +48,8 @@ public class UserManagementService {
     UserCurrentStatusRepository statusRepository;
     @Autowired
     ElasticsearchRestTemplate restTemplate;
+    @Autowired
+    FriendsService friendsService;
 
     public User findUserByEmail(String email){
         Page<User> page = userRepository.findByEmail(email, Pageable.ofSize(1));
@@ -63,6 +66,9 @@ public class UserManagementService {
         user.setCurrentStatus(status);
         userRepository.save(user);
         statusRepository.save(status);
+        //add user himself to his friend
+        Friend friend =new Friend(user.getUserName(), user.getEmail(), user.getCarbonCredit());
+        friendsService.addFriend(friend, user.getEmail());
     }
     public void updateUser(User user){
         userRepository.save(user);

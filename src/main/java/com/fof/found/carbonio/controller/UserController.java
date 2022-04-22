@@ -109,4 +109,8 @@ public class UserController {
         f.setName(friend.getUserName());
         friendsService.addFriend(f, user.getEmail());
     }
+    @PostMapping("/carbonMarket/user/giveGift")
+    public void giveGiftToFriends(@RequestParam(name="friendEmail")String friendEmail,@RequestParam(name="token")String token,@RequestParam(name="amount")float amount){
+        friendsService.giveGift(friendEmail,token,amount);
+    }
 }

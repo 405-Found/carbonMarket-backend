@@ -1,6 +1,7 @@
 package com.fof.found.carbonio.configuration;
 
 import com.fof.found.carbonio.entity.redisModel.Friend;
+import com.fof.found.carbonio.entity.redisModel.FriendInfo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
