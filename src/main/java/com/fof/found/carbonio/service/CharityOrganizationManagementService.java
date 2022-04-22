@@ -41,9 +41,8 @@ public class CharityOrganizationManagementService {
         charityOrganizationRepository.findAll().forEach(orgs::add);
         return orgs;
     }
-    public void addOrg(List<CharityOrganization> orgs){
-
-        charityOrganizationRepository.save(org);
+    public void addOrgs(List<CharityOrganization> orgs){
+        charityOrganizationRepository.saveAll(orgs);
     }
 
 

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-@Document(indexName = "activities8",createIndex = true)
+@Document(indexName = "activities10",createIndex = true)
 public class Activity {
     @Field(type = FieldType.Keyword)
     private UUID userID;

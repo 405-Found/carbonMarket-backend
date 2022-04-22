@@ -58,7 +58,11 @@ public class UserManagementService {
     }
 
     public void registerUser(User user){
+        UserStatus status = new UserStatus();
+        status.setUserID(user.getUserID());
+        user.setCurrentStatus(status);
         userRepository.save(user);
+        statusRepository.save(status);
     }
     public void updateUser(User user){
         userRepository.save(user);
@@ -70,6 +74,11 @@ public class UserManagementService {
         Goal todayGoal = new Goal(goal);
         user.setTodayGoal(todayGoal);
         UserStatus userStatus = user.getCurrentStatus();
+        if(userStatus == null){
+            userStatus = new UserStatus();
+            userStatus.setUserID(user.getUserID());
+            //update the user with current user status
+        }
         userStatus.setCurCarbonEmission(userStatus.getCurCarbonEmission()+goal);
         updateUser(user);
         updateUserStatus(userStatus);
@@ -106,7 +115,7 @@ public class UserManagementService {
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(queryBuilder)
                 .build();
-        SearchHits<Activity> eventSearchHits = restTemplate.search(searchQuery,Activity.class, IndexCoordinates.of("activities8"));
+        SearchHits<Activity> eventSearchHits = restTemplate.search(searchQuery,Activity.class, IndexCoordinates.of("activities10"));
         return eventSearchHits.getSearchHits().stream().map(x->x.getContent()).collect(Collectors.toList());
     }
     public List<Activity> findAllActivities(String token){

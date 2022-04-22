@@ -4,10 +4,7 @@ import com.fof.found.carbonio.entity.CharityOrganization;
 import com.fof.found.carbonio.service.CharityOrganizationManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,5 +28,9 @@ public class OrganizationController {
         }
         return  charityOrganizations;
 
+    }
+    @PostMapping("/carbonMarket/addOrgs")
+    public void addOrgs(@RequestBody List<CharityOrganization> orgs){
+        charityOrganizationManagementService.addOrgs(orgs);
     }
 }

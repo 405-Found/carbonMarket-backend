@@ -3,9 +3,7 @@ package com.fof.found.carbonio.controller;
 import com.fof.found.carbonio.entity.Tip;
 import com.fof.found.carbonio.service.TipsManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,5 +17,14 @@ public class TipsController {
     @ResponseBody
     public List<Tip> getTips(){
         return tipsManagementService.getRandomTips();
+    }
+    @GetMapping("/carbonMarket/tip")
+    @ResponseBody
+    public Tip getOneTip(){
+        return tipsManagementService.getOneTip();
+    }
+    @PostMapping("/carbonMarket/saveTips")
+    public void saveTips(@RequestBody List<Tip> tips){
+        tipsManagementService.saveTips(tips);
     }
 }
