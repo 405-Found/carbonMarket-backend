@@ -66,12 +66,10 @@ public class UserController {
     //TODO
     @PostMapping("/carbonMarket/user/setGoal")
     @ResponseBody
-    public boolean setGoal(@RequestParam(name="goal") float goal,@RequestParam(name = "token")String token){
+    public float setGoal(@RequestParam(name="goal") float goal,@RequestParam(name = "token")String token){
         User user = userManagementService.findUserByToken(token);
-        Goal todayGoal = new Goal(goal);
-        user.setTodayGoal(todayGoal);
-        userManagementService.updateUser(user);
-        return true;
+        userManagementService.setGoalForUser(user,goal);
+        return goal;
     }
     //TODO
     @PostMapping("/carbonMarket/user/setDailyPlan")

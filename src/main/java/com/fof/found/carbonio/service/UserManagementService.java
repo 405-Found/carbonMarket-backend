@@ -43,6 +43,18 @@ public class UserManagementService {
     public void updateUser(User user){
         userRepository.save(user);
     }
+    public void updateUserStatus(UserStatus userStatus){
+        statusRepository.save(userStatus);
+    }
+    public void setGoalForUser(User user,float goal){
+        Goal todayGoal = new Goal(goal);
+        user.setTodayGoal(todayGoal);
+        UserStatus userStatus = user.getCurrentStatus();
+        userStatus.setCurCarbonEmission(userStatus.getCurCarbonEmission()+goal);
+        updateUser(user);
+        updateUserStatus(userStatus);
+
+    }
     public Activity createUserActivity(Activity activity, String token){
         //find corresponding user
         User user = findUserByToken(token);
@@ -70,6 +82,7 @@ public class UserManagementService {
         if(curStatus == null){
             curStatus = new UserStatus();
             curStatus.setUserID(user.getUserID());
+            //update the user with current user status
         }
         //update the data of user status in the database
         float carbonEmission = curStatus.getCurCarbonEmission();
@@ -87,6 +100,8 @@ public class UserManagementService {
         }
         //update the status
         statusRepository.save(curStatus);
+        user.setCurrentStatus(curStatus);
+        updateUser(user);
         //Set the green level of the userStatus
 
     }
