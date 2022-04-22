@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class UserController {
@@ -48,6 +49,7 @@ public class UserController {
             String token = userManagementService.generateToken(user);
             //Save user info into database
             user.setToken(token);
+            user.setUserID(UUID.randomUUID());
             userManagementService.registerUser(user);
 
             return new RegistrationResult(true,"Registration success!",token);
@@ -77,5 +79,15 @@ public class UserController {
     public float setDailyPlan(@RequestBody List<PlanItem> items){
         DailyPlan plan = new DailyPlan(items);
         return dailyPlanService.calculateDailyEmission(plan);
+    }
+    @GetMapping("/carbonMarket/user/currentActivities")
+    @ResponseBody
+    public List<Activity> getTodayActivity(@RequestParam(name="token")String token){
+        return userManagementService.findActivityForToday(token);
+    }
+    @GetMapping("/carbonMarket/user/historicalActivities")
+    @ResponseBody
+    public List<Activity> getHistoricalActivity(@RequestParam(name="token")String token){
+        return userManagementService.findAllActivities(token);
     }
 }

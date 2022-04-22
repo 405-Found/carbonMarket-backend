@@ -17,4 +17,10 @@ public class CharityOrganization {
     private float moneyPerKilo;
     private float targetMoney;
     private float currentMoney;
+
+    public CharityOrganization(String name, String description, float moneyPerKilo) {
+        this.name = name;
+        this.description = description;
+        this.moneyPerKilo = moneyPerKilo;
+    }
 }

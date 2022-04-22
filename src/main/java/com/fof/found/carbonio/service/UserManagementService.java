@@ -8,16 +8,34 @@ import com.fof.found.carbonio.repository.ActivityRepository;
 import com.fof.found.carbonio.repository.UserCurrentStatusRepository;
 import com.fof.found.carbonio.repository.UserRepository;
 import com.fof.found.carbonio.entity.User;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 @Service
 public class UserManagementService {
@@ -27,6 +45,8 @@ public class UserManagementService {
     ActivityRepository activityRepository;
     @Autowired
     UserCurrentStatusRepository statusRepository;
+    @Autowired
+    ElasticsearchRestTemplate restTemplate;
 
     public User findUserByEmail(String email){
         Page<User> page = userRepository.findByEmail(email, Pageable.ofSize(1));
@@ -59,7 +79,7 @@ public class UserManagementService {
         //find corresponding user
         User user = findUserByToken(token);
         //add timestamp on activity
-        activity.setDate(LocalDateTime.now());
+        activity.setDate(LocalDate.now());
         activity.setUserID(user.getUserID());
 
         //do Calculations on carbon emission
@@ -73,8 +93,34 @@ public class UserManagementService {
 
         return activity;
     }
+    public List<Activity> findActivityForToday(String token){
+        User user = findUserByToken(token);
+        if(user==null){
+            return Collections.emptyList();
+        }
+        //TODO
+        QueryBuilder queryBuilder = QueryBuilders.boolQuery()
+                .must(rangeQuery("date")
+                        .gte(LocalDateTime.now().truncatedTo(ChronoUnit.DAYS).toString()))
+                .must(termQuery("userID",user.getUserID().toString().toLowerCase()));
+        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(queryBuilder)
+                .build();
+        SearchHits<Activity> eventSearchHits = restTemplate.search(searchQuery,Activity.class, IndexCoordinates.of("activities8"));
+        return eventSearchHits.getSearchHits().stream().map(x->x.getContent()).collect(Collectors.toList());
+    }
+    public List<Activity> findAllActivities(String token){
+        User user = findUserByToken(token);
+        if(user==null){
+            return Collections.emptyList();
+        }
+        List<Activity> activities =activityRepository.findByUserID(user.getUserID(),Pageable.ofSize(15)).getContent();
+        activities = new ArrayList<>(activities);
+        activities.sort((x1,x2)->(x1.getDate().isAfter(x2.getDate())?1:-1));
+        return activities;
+    }
     private void updateUserGoalStatus(User user,Activity activity){
-
+        //TODO
     }
     private void updateCurrentUserStatus(Activity activity,User user){
         List<UserStatus> statuses = statusRepository.findByUserID(user.getUserID(),Pageable.ofSize(1)).getContent();
