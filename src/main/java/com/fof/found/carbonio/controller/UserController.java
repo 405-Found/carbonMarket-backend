@@ -69,7 +69,6 @@ public class UserController {
     public UserStatus getUserCurrentStatus(@RequestParam(name = "token")String token){
         return userManagementService.getUserStatus(userManagementService.findUserByToken(token));
     }
-    //TODO
     @PostMapping("/carbonMarket/user/setGoal")
     @ResponseBody
     public float setGoal(@RequestParam(name="goal") float goal,@RequestParam(name = "token")String token){
@@ -77,7 +76,7 @@ public class UserController {
         userManagementService.setGoalForUser(user,goal);
         return goal;
     }
-    //TODO
+
     @PostMapping("/carbonMarket/user/setDailyPlan")
     @ResponseBody
     public float setDailyPlan(@RequestBody List<PlanItem> items){
