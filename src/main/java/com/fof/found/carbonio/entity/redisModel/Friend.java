@@ -21,4 +21,10 @@ public class Friend implements Serializable{
         this.email = email;
         this.carbonCredit = carbonCredit;
     }
+
+    public Friend(Friend friend) {
+        this.carbonCredit = friend.getCarbonCredit();
+        this.email = friend.getEmail();
+        this.name = friend.getName();
+    }
 }

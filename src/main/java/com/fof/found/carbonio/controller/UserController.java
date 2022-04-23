@@ -113,4 +113,8 @@ public class UserController {
     public void giveGiftToFriends(@RequestParam(name="friendEmail")String friendEmail,@RequestParam(name="token")String token,@RequestParam(name="amount")float amount){
         friendsService.giveGift(friendEmail,token,amount);
     }
+    @PostMapping("/carbonMarket/user/donate")
+    public void donateToCharity(@RequestParam(name="token")String token,@RequestParam(name="amount")float amount){
+        userManagementService.donate(token, amount);
+    }
 }

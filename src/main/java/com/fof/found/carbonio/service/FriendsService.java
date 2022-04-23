@@ -26,7 +26,7 @@ public class FriendsService {
     private ZSetOperations<String, Friend> ZSets;
 
     public List<Friend> getFriends(String email){
-        Set<Friend> sets = ZSets.range(email,0,10);
+        Set<Friend> sets = ZSets.range(email,0,ZSets.zCard(email));
         ArrayList<Friend> friends = new ArrayList<>();
         sets.forEach(friends::add);
         friends.sort((x1,x2)->(x1.getCarbonCredit()> x2.getCarbonCredit()?-1:1));

@@ -21,6 +21,7 @@ import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
@@ -30,10 +31,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
@@ -196,5 +194,33 @@ public class UserManagementService {
         String myHash = DatatypeConverter
                 .printHexBinary(digest).toUpperCase();
         return myHash;
+    }
+    public void donate(String token,float amount){
+        User user = findUserByToken(token);
+        //refresh leader board
+        Friend userF = new Friend(user.getUserName(), user.getEmail(), user.getCarbonCredit());
+        friendsService.deleteFriendOnLeaderBoard(userF, user.getEmail());
+        //update user
+        float finalAmount = user.getCarbonCredit()+amount;
+        user.setCarbonCredit(user.getCarbonCredit()+amount);
+        updateUser(user);
+
+        freshLeaderBoardOfFriend(user.getEmail(), new Friend(userF),finalAmount);
+
+        //refresh leaderboard
+        userF.setCarbonCredit(user.getCarbonCredit());
+        friendsService.addFriendOnLeaderBoard(userF, user.getEmail());
+
+    }
+    public void freshLeaderBoardOfFriend(String userEmail,Friend userF,float finalAmount){
+        Friend newUserF = new Friend(userF);
+        newUserF.setCarbonCredit(finalAmount);
+        List<Friend> friends = friendsService.getFriends(userEmail);
+        for(Friend f: friends){
+            User uf = findUserByEmail(f.getEmail());
+            friendsService.deleteFriendOnLeaderBoard(userF,uf.getEmail());
+            friendsService.addFriendOnLeaderBoard(newUserF, uf.getEmail());
+        }
+
     }
 }
