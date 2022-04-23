@@ -1,5 +1,6 @@
 package com.fof.found.carbonio.service;
 
+import com.fof.found.carbonio.calculationModel.CarbonEmissionBaseModel;
 import com.fof.found.carbonio.entity.Activity;
 import com.fof.found.carbonio.entity.Share;
 import com.fof.found.carbonio.entity.UserStatus;
@@ -50,6 +51,11 @@ public class UserManagementService {
     ElasticsearchRestTemplate restTemplate;
     @Autowired
     FriendsService friendsService;
+    @Autowired
+    CarbonEstimationService carbonEstimationService;
+    @Autowired
+    CarbonEmissionBaseModel carbonEmissionBaseModel;
+
 
     public User findUserByEmail(String email){
         Page<User> page = userRepository.findByEmail(email, Pageable.ofSize(1));
@@ -155,10 +161,8 @@ public class UserManagementService {
 
         //update the data of user status in the database
 
-        //TODO calculate carbon amount
-        /*
-        * fake for test*/
-        activity.getActivityItem().setCarbonAmount(9);
+        //calculate carbon amount
+        activity.getActivityItem().setCarbonAmount(carbonEstimationService.estimateWithActivity(activity,carbonEmissionBaseModel));
         //
         //update the carbonCredit
         user.setCarbonCredit(user.getCarbonCredit()-activity.getActivityItem().getCarbonAmount());
